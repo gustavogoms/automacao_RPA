@@ -1,0 +1,74 @@
+import os
+import time
+import PyPDF2
+import pandas as pd
+import uipath
+
+# Configurações
+CAMINHO_RECIBOS = r"C:\Users\gusta\OneDrive\Área de Trabalho\recebidos"
+CAMINHO_RELATORIOS = r"C:\Users\gusta\OneDrive\Área de Trabalho\relatorios"
+
+# Criar uma nova instância do UiPath
+uipath_robot = uipath.Robot()
+
+# Função para ler e extrair informações de recibos PDF
+def extrair_informacoes_recibos(caminho_recibos):
+    informacoes_recibos = []
+    try:
+        for arquivo in os.listdir(caminho_recibos):
+            if arquivo.endswith(".pdf"):
+                with open(os.path.join(caminho_recibos, arquivo), "rb") as file:
+                    pdf_reader = PyPDF2.PdfFileReader(file)
+                    text = ""
+                    for page_num in range(pdf_reader.numPages):
+                        text += pdf_reader.getPage(page_num).extractText()
+                    # Lógica para extrair informações dos recibos e adicionar à lista informacoes_recibos
+                    informacoes_recibos.append({
+                        "arquivo": arquivo,
+                        "informacao1": "",
+                        "informacao2": "",
+                        # Adicione mais informações conforme necessário
+                    })
+        return informacoes_recibos
+    except Exception as e:
+        print(f"Erro ao extrair informações dos recibos: {e}")
+        return None
+
+# Função para preencher formulário online
+def preencher_formulario(informacoes_recibos):
+    try:
+        for informacao in informacoes_recibos:
+            # Lógica para preencher o formulário com as informações dos recibos
+            # Exemplo: uipath_robot.type_keys("informacao1")
+            time.sleep(1)  # Aguardar para evitar detecção de bot
+            # Adicione mais campos e lógica de preenchimento conforme necessário
+    except Exception as e:
+        print(f"Erro ao preencher formulário: {e}")
+
+# Função para enviar relatórios de despesas
+def enviar_relatorios_aprovacao(caminho_relatorios):
+    try:
+        for arquivo_relatorio in os.listdir(caminho_relatorios):
+            if arquivo_relatorio.endswith(".xlsx"):
+                # Lógica para enviar o relatório para aprovação no sistema
+                # Exemplo: uipath_robot.upload_file(arquivo_relatorio)
+                # Esperar pela aprovação do relatório
+                print(f"Relatório {arquivo_relatorio} aprovado com sucesso!")
+    except Exception as e:
+        print(f"Erro ao enviar relatórios para aprovação: {e}")
+
+# Função principal
+def main():
+    informacoes_recibos = extrair_informacoes_recibos(CAMINHO_RECIBOS)
+    if informacoes_recibos:
+        preencher_formulario(informacoes_recibos)
+        enviar_relatorios_aprovacao(CAMINHO_RELATORIOS)
+    else:
+        print("Não foi possível extrair informações dos recibos. Verifique o diretório.")
+
+# Execução da função principal
+if __name__ == "__main__":
+    main()
+
+# Finalizar a instância do UiPath
+uipath_robot.dispose()
